@@ -245,7 +245,7 @@ function analyzePhoto(file) {
     generationConfig: { temperature: 0.1, maxOutputTokens: 300 }
   };
 
-  var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
+  var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" + GEMINI_API_KEY;
 
   var res = UrlFetchApp.fetch(url, {
     method: "post",
