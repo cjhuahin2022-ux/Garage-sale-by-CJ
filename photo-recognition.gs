@@ -26,8 +26,8 @@
 // НАСТРОЙКИ — заполните перед запуском
 // ============================================================
 
-/** Бесплатный ключ: aistudio.google.com → Get API key */
-var GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE";
+/** Бесплатный ключ: aistudio.google.com → Получить ключ API */
+var GEMINI_API_KEY = "AIzaSyDN_wViAMFzBEkAzVnq4iE_xsjTWJqTHgc";
 
 /** ID папки Google Drive (из URL папки) */
 var DRIVE_FOLDER_ID = "1vduBNHsuhBdIzc2qFDtSwlNsawWTn-fC";
@@ -60,7 +60,12 @@ function onOpen() {
 // ============================================================
 
 function autoRenamePhotos() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var logSheet = getOrCreateLogSheet(ss);
+
   if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+    logSheet.appendRow([new Date(), "—", "❌ НЕТ КЛЮЧА", "Gemini API ключ не установлен. Укажите GEMINI_API_KEY в начале скрипта."]);
+    SpreadsheetApp.getActiveSpreadsheet().toast("Укажите GEMINI_API_KEY в скрипте", "⚠️ Ключ не установлен", 10);
     SpreadsheetApp.getUi().alert(
       "⚠️ Укажите GEMINI_API_KEY в начале скрипта.\n\n" +
       "Получите бесплатный ключ на aistudio.google.com"
@@ -68,10 +73,10 @@ function autoRenamePhotos() {
     return;
   }
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var items = loadItems(ss);
 
   if (items.length === 0) {
+    logSheet.appendRow([new Date(), "—", "❌ НЕТ ТОВАРОВ", "Товары не найдены. Добавьте строки в таблицу (Sheet1)."]);
     Logger.log("Товары не найдены в таблице.");
     return;
   }
@@ -80,6 +85,7 @@ function autoRenamePhotos() {
   try {
     folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
   } catch (e) {
+    logSheet.appendRow([new Date(), "—", "❌ ОШИБКА DRIVE", e.message]);
     SpreadsheetApp.getUi().alert("❌ Не удалось открыть папку Drive: " + e.message);
     return;
   }
@@ -89,8 +95,6 @@ function autoRenamePhotos() {
   var renamed = 0;
   var skipped = 0;
   var errors = 0;
-
-  var logSheet = getOrCreateLogSheet(ss);
 
   while (files.hasNext()) {
     var file = files.next();
