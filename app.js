@@ -17,9 +17,26 @@
   let refreshTimer = null;
 
   // ----------------------------------------------------------------
-  // Эмодзи для категорий
+  // Система категорий с кодами
+  // Формат в таблице: "01 · Электроника"
   // ----------------------------------------------------------------
-  const CATEGORY_EMOJI = {
+  const CATEGORY_MAP = {
+    "01": { name: "Электроника",            emoji: "📱" },
+    "02": { name: "Бытовая техника",        emoji: "🏠" },
+    "03": { name: "Мебель",                 emoji: "🛋️" },
+    "04": { name: "Одежда и аксессуары",    emoji: "👗" },
+    "05": { name: "Детские товары",         emoji: "🧸" },
+    "06": { name: "Спорт и активный отдых", emoji: "⚽" },
+    "07": { name: "Транспорт",              emoji: "🚲" },
+    "08": { name: "Декор и интерьер",       emoji: "🖼️" },
+    "09": { name: "Кухня и посуда",         emoji: "🍽️" },
+    "10": { name: "Книги и медиа",          emoji: "📚" },
+    "11": { name: "Инструменты и стройка",  emoji: "🔧" },
+    "12": { name: "Прочее",                 emoji: "📦" },
+  };
+
+  // Запасной словарь для старых категорий без кода
+  const CATEGORY_EMOJI_LEGACY = {
     "бытовая техника":  "🏠",
     "мебель":           "🛋️",
     "детские игрушки":  "🧸",
@@ -31,14 +48,18 @@
     "книги":            "📚",
     "посуда":           "🍽️",
     "инструменты":      "🔧",
-    "животные":         "🐾",
     "прочее":           "📦",
   };
 
   function getCategoryEmoji(category) {
     if (!category) return "📦";
-    const key = category.toLowerCase().trim();
-    return CATEGORY_EMOJI[key] || "🏷️";
+    // Новый формат: "01 · Электроника" или "01 • Электроника"
+    const codeMatch = category.match(/^(\d{2})\s*[·•]/);
+    if (codeMatch && CATEGORY_MAP[codeMatch[1]]) {
+      return CATEGORY_MAP[codeMatch[1]].emoji;
+    }
+    // Запасной вариант: старые названия без кода
+    return CATEGORY_EMOJI_LEGACY[category.toLowerCase().trim()] || "🏷️";
   }
 
   // ----------------------------------------------------------------
@@ -173,26 +194,33 @@
 
   // ----------------------------------------------------------------
   // Сопоставление фото с товарами по имени файла
+  // Поддерживаемые форматы:
+  //   Новый: "01-003-iphone-13.jpg"  → товар №3
+  //   Старый: "3.jpg", "03.jpg", "3-name.jpg" → товар №3
   // ----------------------------------------------------------------
+  function thumbUrl(id) {
+    return "https://drive.google.com/thumbnail?id=" + id + "&sz=w600";
+  }
+
   function buildPhotoMap(driveFiles) {
     const map = {};
 
     for (const file of driveFiles) {
-      // Убираем расширение
       const baseName = file.name.replace(/\.[^.]+$/, "");
 
-      // Ищем ведущие цифры (номер товара): "1", "01", "1-холодильник", "1_name" и т.д.
-      const numMatch = baseName.match(/^(\d+)/);
-      if (numMatch) {
-        // Нормализуем: "01" → "1"
-        const num = String(parseInt(numMatch[1], 10));
-        if (!map[num]) {
-          // Thumbnail URL — работает для публично открытых файлов
-          map[num] =
-            "https://drive.google.com/thumbnail?id=" +
-            file.id +
-            "&sz=w600";
-        }
+      // Новый формат: "01-003-name" — берём 3-значный номер товара
+      const newFmt = baseName.match(/^\d{2}-(\d{3})-/);
+      if (newFmt) {
+        const num = String(parseInt(newFmt[1], 10));
+        if (!map[num]) map[num] = thumbUrl(file.id);
+        continue;
+      }
+
+      // Старый формат: ведущие цифры "3", "03", "3-name"
+      const legFmt = baseName.match(/^(\d+)/);
+      if (legFmt) {
+        const num = String(parseInt(legFmt[1], 10));
+        if (!map[num]) map[num] = thumbUrl(file.id);
       }
     }
 
