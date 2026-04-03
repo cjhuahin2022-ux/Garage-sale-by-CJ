@@ -27,6 +27,7 @@ var ITEMS_SHEET_NAME = "Лист1";   // название листа с това
 var LOG_SHEET_NAME   = "Photo Log";
 var DEFAULT_DATE     = "25 апреля 2026";
 var SALE_DISCOUNT    = 0.75;      // 75% от рыночной цены
+var MAX_PHOTOS_PER_RUN = 10;      // лимит фото за один запуск (защита от превышения квоты)
 
 // ============================================================
 // МЕНЮ
@@ -91,17 +92,22 @@ function autoRenamePhotos() {
     return;
   }
 
+  // Ограничиваем количество фото за один запуск
+  var batch = unprocessed.slice(0, MAX_PHOTOS_PER_RUN);
+  var remaining = unprocessed.length - batch.length;
+
   logResult(logSheet, "—", "—", "—", true,
-    "▶ Начало обработки. Найдено новых фото: " + unprocessed.length);
+    "▶ Начало обработки. Найдено новых фото: " + unprocessed.length +
+    (remaining > 0 ? ". Обрабатываем первые " + MAX_PHOTOS_PER_RUN + " (осталось ещё: " + remaining + ")" : ""));
 
   // -------------------------------------------------------
   // Фаза 1: Анализ каждого фото через Gemini
   // -------------------------------------------------------
   var entries = [];   // [{file, analysis}]
 
-  for (var i = 0; i < unprocessed.length; i++) {
-    var file = unprocessed[i];
-    Logger.log("Анализирую (" + (i+1) + "/" + unprocessed.length + "): " + file.getName());
+  for (var i = 0; i < batch.length; i++) {
+    var file = batch[i];
+    Logger.log("Анализирую (" + (i+1) + "/" + batch.length + "): " + file.getName());
 
     var analysis = null;
     try {
@@ -116,8 +122,8 @@ function autoRenamePhotos() {
 
     entries.push({ file: file, analysis: analysis, assigned: null, photoIndex: 1 });
 
-    // Пауза: бесплатный Gemini — 15 запросов/мин
-    if (i < unprocessed.length - 1) Utilities.sleep(4200);
+    // Пауза: бесплатный Gemini — 10 запросов/мин (6с между запросами)
+    if (i < batch.length - 1) Utilities.sleep(6000);
   }
 
   // -------------------------------------------------------
