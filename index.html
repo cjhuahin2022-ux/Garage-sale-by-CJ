@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Гаражная распродажа в Хуахине — 25 апреля 2026. Мебель, техника, одежда, электроника и многое другое по выгодным ценам." />
+  <meta property="og:title" content="Гаражная распродажа в Хуахине" />
+  <meta property="og:description" content="25 апреля 2026 • Хуахин, Таиланд — выгодные цены на мебель, технику, одежду и многое другое" />
+  <meta property="og:type" content="website" />
+  <title>Гаражная распродажа в Хуахине 🏷️</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ШАПКА -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-badge">GARAGE SALE</div>
+      <h1 class="header-title">Гаражная распродажа<br>в Хуахине</h1>
+      <p class="header-subtitle">
+        <span class="header-icon">📅</span> 25 апреля 2026
+        &nbsp;&nbsp;
+        <span class="header-icon">📍</span> Хуахин, Таиланд
+      </p>
+      <p class="header-tagline">Скидки до&nbsp;<strong>25%</strong> от рыночной цены — всё должно уйти!</p>
+    </div>
+  </header>
+
+  <!-- ПОИСК -->
+  <div class="search-bar-wrap">
+    <div class="search-bar-inner">
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="Поиск товаров..."
+        autocomplete="off"
+      />
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+
+  <!-- НАВИГАЦИЯ ПО КАТЕГОРИЯМ -->
+  <nav class="category-nav" id="category-nav" aria-label="Категории товаров">
+    <!-- Кнопки категорий генерируются JavaScript -->
+    <div class="category-nav-skeleton">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ОСНОВНОЙ КОНТЕНТ -->
+  <main class="main-content">
+
+    <!-- Состояние загрузки -->
+    <div id="loading-state" class="loading-state" aria-live="polite">
+      <div class="skeleton-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+
+    <!-- Ошибка -->
+    <div id="error-state" class="error-state hidden" role="alert">
+      <div class="error-icon">⚠️</div>
+      <h2>Не удалось загрузить данные</h2>
+      <p id="error-message"></p>
+      <button id="retry-btn" class="btn-retry">Попробовать снова</button>
+    </div>
+
+    <!-- Пустой результат фильтра -->
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-icon">📦</div>
+      <p>Товары в этой категории не найдены</p>
+    </div>
+
+    <!-- Счётчик товаров -->
+    <div id="items-count" class="items-count hidden"></div>
+
+    <!-- Сетка товаров -->
+    <div id="item-grid" class="item-grid" role="list"></div>
+
+  </main>
+
+  <!-- ПОДВАЛ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-update">
+        Данные обновлены:&nbsp;<span id="last-updated">—</span>
+      </p>
+      <p class="footer-note">
+        Цены составляют ~75% от рыночной стоимости новых товаров.
+        Все товары б/у, в хорошем состоянии.
+      </p>
+      <p class="footer-note">
+        Hua Hin Garage Sale by CJ &nbsp;•&nbsp; 2026
+      </p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
