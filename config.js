@@ -10,7 +10,7 @@ window.CONFIG = {
 
   // Ваш API ключ Google Cloud (нужен для Drive API)
   // Инструкция: см. README.md → Шаг 3
-  GOOGLE_API_KEY: "YOUR_API_KEY_HERE",
+  GOOGLE_API_KEY: "AIzaSyCO2HhyYJTsm94dGOETxHchRdqIr2_Z0o8",
 
   // Интервал автообновления данных (миллисекунды). 5 мин = 300 000
   REFRESH_INTERVAL_MS: 5 * 60 * 1000,
