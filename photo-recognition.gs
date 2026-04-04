@@ -253,12 +253,22 @@ function analyzePhoto(file) {
 
   var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=" + GEMINI_API_KEY;
 
-  var res = UrlFetchApp.fetch(url, {
-    method: "post",
-    contentType: "application/json",
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  });
+  // Retry при 429 (rate-limit): 2 попытки с паузой 65 сек
+  var res;
+  for (var attempt = 1; attempt <= 3; attempt++) {
+    res = UrlFetchApp.fetch(url, {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+    if (res.getResponseCode() === 429 && attempt < 3) {
+      Logger.log("429 rate-limit, жду 65 сек (попытка " + attempt + "/3)...");
+      Utilities.sleep(65000);
+      continue;
+    }
+    break;
+  }
 
   if (res.getResponseCode() !== 200) {
     throw new Error("Gemini HTTP " + res.getResponseCode() + ": " + res.getContentText().substring(0, 200));
